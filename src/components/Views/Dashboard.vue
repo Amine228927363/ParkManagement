@@ -90,7 +90,7 @@
                 </div>
                 <div v-if="selectedSpace.status === 'occupied'">
                   <div class="mb-2"><span class="font-semibold">User:</span> {{ selectedSpace.user }}</div>
-                  <div class="mb-2"><span class="font-semibold">Since:</span> {{ formatTime(selectedSpace.since) }}</div>
+                  <div class="mb-2"><span class="font-semibold">Since:</span> {{ selectedSpace.since }}</div>
                   <div class="mb-2"><span class="font-semibold">Duration:</span> {{ getOccupiedDuration(selectedSpace.since) }}</div>
                 </div>
               </div>
@@ -477,208 +477,223 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ParkingManagementDashboard',
-  data() {
-    return {
-      // Navigation
-      activeTab: 'dashboard',
-      tabs: [
-        { id: 'dashboard', name: 'Dashboard' },
-        { id: 'spaces', name: 'Parking Spaces' },
-        { id: 'history', name: 'History' },
-        { id: 'requests', name: 'User Requests' },
-        { id: 'users', name: 'Registered Users' },
-      ],
-      
-      // Mock data - would come from API in real app
-          parkingSpaces: [
-      { id: 1, number: "A1", status: "occupied", vehicle: "ABC-123", timeIn: "10:30 AM" },
-      { id: 2, number: "A2", status: "available" },
-      { id: 3, number: "B1", status: "reserved", reservedBy: "user_01" },
-    ],
-    history: [
-      { id: 1, user: "John Doe", action: "Parked at A1", timestamp: "2025-04-08 10:30" },
-      { id: 2, user: "Sarah Lee", action: "Left from B2", timestamp: "2025-04-08 09:50" },
-    ],
-    requests: [
-      { id: 1, user: "admin", type: "Maintenance", message: "Broken sensor in Zone C", status: "pending" },
-      { id: 2, user: "guard_01", type: "Assistance", message: "Vehicle blocked in B4", status: "resolved" },
-    ],
-    users: [
-      { id: 1, name: "John Doe", role: "Visitor", lastLogin: "2025-04-08 09:00" },
-      { id: 2, name: "Admin User", role: "Admin", lastLogin: "2025-04-08 08:45" },
-      { id: 3, name: "Security Guard", role: "Staff", lastLogin: "2025-04-07 16:30" },
-    ],
-    recentActivities: [
-      { id: 1, description: "New event added: Wildlife Tour", time: "2025-04-08 08:00" },
-      { id: 2, description: "Maintenance request submitted", time: "2025-04-07 18:15" },
-      { id: 3, description: "Parking space A3 marked as unavailable", time: "2025-04-07 17:00" },
-    ],
-      
-      // UI state
-      selectedSpace: null,
-      selectedRequest: null,
-      selectedUser: null,
-      
-      // Filters
-      spaceSearch: '',
-      spaceFilter: 'all',
-      historySearch: '',
-      historyFilter: 'all',
-      requestSearch: '',
-      requestFilter: 'all',
-      userSearch: '',
-      userFilter: 'all',
-    }
-  },
-  computed: {
-    currentTab() {
-      return this.tabs.find(tab => tab.id === this.activeTab);
-    },
-    totalSpaces() {
-      return this.parkingSpaces.length;
-    },
-    availableSpaces() {
-      return this.parkingSpaces.filter(space => space.status === 'available').length;
-    },
-    filteredSpaces() {
-      let spaces = [...this.parkingSpaces];
-      
-      // Filter by status
-      if (this.spaceFilter !== 'all') {
-        spaces = spaces.filter(space => space.status === this.spaceFilter);
-      }
-      
-      // Search by ID or user
-      if (this.spaceSearch) {
-        const search = this.spaceSearch.toLowerCase();
-        spaces = spaces.filter(space => 
-          space.id.toString().includes(search) || 
-          (space.user && space.user.toLowerCase().includes(search))
-        );
-      }
-      
-      return spaces;
-    },
-    filteredHistory() {
-      let records = [...this.history];
-      
-      // Filter by status
-      if (this.historyFilter === 'active') {
-        records = records.filter(record => !record.exitTime);
-      } else if (this.historyFilter === 'completed') {
-        records = records.filter(record => record.exitTime);
-      }
-      
-      // Search by user or space
-      if (this.historySearch) {
-        const search = this.historySearch.toLowerCase();
-        records = records.filter(record => 
-          record.user.toLowerCase().includes(search) || 
-          record.spaceId.toString().includes(search)
-        );
-      }
-      
-      // Sort by most recent first
-      return records.sort((a, b) => new Date(b.entryTime) - new Date(a.entryTime));
-    },
-    filteredRequests() {
-      let filteredReqs = [...this.requests];
-      
-      // Filter by status
-      if (this.requestFilter !== 'all') {
-        filteredReqs = filteredReqs.filter(req => req.status === this.requestFilter);
-      }
-      
-      // Search by user or type
-      if (this.requestSearch) {
-        const search = this.requestSearch.toLowerCase();
-        filteredReqs = filteredReqs.filter(req => 
-          req.user.toLowerCase().includes(search) || 
-          req.type.toLowerCase().includes(search)
-        );
-      }
-      
-      // Sort by most recent first
-      return filteredReqs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    },
-    filteredUsers() {
-      let filteredUsers = [...this.users];
-      
-      // Filter by status
-      if (this.userFilter !== 'all') {
-        filteredUsers = filteredUsers.filter(user => user.status === this.userFilter);
-      }
-      
-      // Search by name, email, or vehicle
-      if (this.userSearch) {
-        const search = this.userSearch.toLowerCase();
-        filteredUsers = filteredUsers.filter(user => 
-          user.name.toLowerCase().includes(search) || 
-          user.email.toLowerCase().includes(search) ||
-          user.vehicle.toLowerCase().includes(search)
-        );
-      }
-      
-      // Sort alphabetically by name
-      return filteredUsers.sort((a, b) => a.name.localeCompare(b.name));
-    }
-  },
-  methods: {
-    // Data operations
-    refreshData() {
-      // In a real app, this would fetch fresh data from the API
-      this.loadMockData();
-      
-      // Add a notification about the refresh
-      this.recentActivities.unshift({
-        id: Date.now(),
-        type: 'System',
-        description: 'Dashboard data refreshed',
-        time: new Date().toISOString()
-      });
-    },
-    loadMockData() {
-      // Mock data for parking spaces
-      this.parkingSpaces = Array.from({ length: 50 }, (_, i) => ({
-        id: i + 1,
-        status: Math.random() > 0.5 ? 'available' : 'occupied',
-        user: Math.random() > 0.5 ? `User ${Math.floor(Math.random() * 10)}` : null,
-        since: Math.random() > 0.5 ? new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString() : null
-      }));
-      
-      // Mock data for history
-      this.history = Array.from({ length: 100 }, (_, i) => ({
-        id: i + 1,
-        spaceId: Math.floor(Math.random() * 50) + 1,
-        user: `User ${Math.floor(Math.random() * 10)}`,
-        entryTime: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-        exitTime: Math.random() > 0.5 ? new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString() : null,
-        paymentStatus: Math.random() > 0.5 ? 'paid' : 'pending'
-      }));
-    },
-    getHistoryDuration(){
-        const history = this.history.filter(item => item.exitTime !== null);
-        return history.map(item => {
-            const entryTime = new Date(item.entryTime);
-            const exitTime = new Date(item.exitTime);
-            const duration = Math.abs(exitTime - entryTime) / 36e5; // in hours
-            return `${Math.floor(duration)} hours`;
-        });
-    },
-    showSpaceDetails(){
-        this.showDetails = true;
-        this.selectedSpace = space;
-    },
-    showRequestDetails(request) {
-      this.selectedRequest = request;
-    },
-    showUserDetails(user) {
-      this.selectedUser = user;
-    },
-    
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+
+// Tabs and navigation
+const activeTab = ref('dashboard')
+const tabs = [
+  { id: 'dashboard', name: 'Dashboard' },
+  { id: 'spaces', name: 'Parking Spaces' },
+  { id: 'history', name: 'History' },
+  { id: 'requests', name: 'User Requests' },
+  { id: 'users', name: 'Registered Users' },
+]
+
+// State
+const parkingSpaces = ref([
+  { id: 1, number: "A1", status: "occupied", vehicle: "ABC-123", since: "10:30 AM" },
+  { id: 2, number: "B2", status: "available" },
+  { id: 3, number: "C3", status: "available" },
+  { id: 4, number: "D4", status: "available" },
+  { id: 5, number: "E5", status: "available" },
+  { id: 2, number: "A2", status: "available" },
+  { id: 3, number: "B1", status: "reserved", reservedBy: "user_01" },
+])
+const history = ref([
+  { id: 1, user: "John Doe", action: "Parked at A1", timestamp: "2025-04-08 10:30" },
+  { id: 2, user: "Sarah Lee", action: "Left from B2", timestamp: "2025-04-08 09:50" },
+])
+const requests = ref([
+  { id: 1, user: "admin", type: "Maintenance", message: "Broken sensor in Zone C", status: "pending" },
+  { id: 2, user: "guard_01", type: "Assistance", message: "Vehicle blocked in B4", status: "resolved" },
+])
+const users = ref([
+  { id: 1, name: "John Doe", role: "Visitor", lastLogin: "2025-04-08 09:00" },
+  { id: 2, name: "Admin User", role: "Admin", lastLogin: "2025-04-08 08:45" },
+  { id: 3, name: "Security Guard", role: "Staff", lastLogin: "2025-04-07 16:30" },
+])
+const recentActivities = ref([])
+
+// UI state
+const selectedSpace = ref(null)
+const selectedRequest = ref(null)
+const selectedUser = ref(null)
+
+// Filters
+const spaceSearch = ref('')
+const spaceFilter = ref('all')
+const historySearch = ref('')
+const historyFilter = ref('all')
+const requestSearch = ref('')
+const requestFilter = ref('all')
+const userSearch = ref('')
+const userFilter = ref('all')
+
+// Computed properties
+const currentTab = computed(() =>
+  tabs.find(tab => tab.id === activeTab.value)
+)
+
+const totalSpaces = computed(() => parkingSpaces.value.length)
+
+const availableSpaces = computed(() =>
+  parkingSpaces.value.filter(space => space.status === 'available').length
+)
+
+const filteredSpaces = computed(() => {
+  let spaces = [...parkingSpaces.value]
+  if (spaceFilter.value !== 'all') {
+    spaces = spaces.filter(space => space.status === spaceFilter.value)
+  }
+  if (spaceSearch.value) {
+    const search = spaceSearch.value.toLowerCase()
+    spaces = spaces.filter(space =>
+      space.id.toString().includes(search) ||
+      (space.user && space.user.toLowerCase().includes(search))
+    )
+  }
+  return spaces
+})
+
+const filteredHistory = computed(() => {
+  let records = [...history.value]
+  if (historyFilter.value === 'active') {
+    records = records.filter(record => !record.exitTime)
+  } else if (historyFilter.value === 'completed') {
+    records = records.filter(record => record.exitTime)
+  }
+  if (historySearch.value) {
+    const search = historySearch.value.toLowerCase()
+    records = records.filter(record =>
+      record.user.toLowerCase().includes(search) ||
+      record.spaceId?.toString().includes(search)
+    )
+  }
+  return records.sort((a, b) => new Date(b.entryTime) - new Date(a.entryTime))
+})
+
+const filteredRequests = computed(() => {
+  let filtered = [...requests.value]
+  if (requestFilter.value !== 'all') {
+    filtered = filtered.filter(req => req.status === requestFilter.value)
+  }
+  if (requestSearch.value) {
+    const search = requestSearch.value.toLowerCase()
+    filtered = filtered.filter(req =>
+      req.user.toLowerCase().includes(search) ||
+      req.type.toLowerCase().includes(search)
+    )
+  }
+  return filtered
+})
+
+const filteredUsers = computed(() => {
+  let filtered = [...users.value]
+  if (userFilter.value !== 'all') {
+    filtered = filtered.filter(user => user.status === userFilter.value)
+  }
+  if (userSearch.value) {
+    const search = userSearch.value.toLowerCase()
+    filtered = filtered.filter(user =>
+      user.name.toLowerCase().includes(search) ||
+      user.email?.toLowerCase().includes(search) ||
+      user.vehicle?.toLowerCase().includes(search)
+    )
+  }
+  return filtered.sort((a, b) => a.name.localeCompare(b.name))
+})
+
+// Methods
+function showSpaceDetails(space) {
+  selectedSpace.value = space
+}
+
+function reserveSpace(id) {
+  const space = parkingSpaces.value.find(s => s.id === id)
+  if (space && space.status === 'available') {
+    space.status = 'occupied'
+    space.user = 'Current User'
+    space.since = new Date().toISOString()
+    selectedSpace.value = space
   }
 }
+
+function releaseSpace(id) {
+  const space = parkingSpaces.value.find(s => s.id === id)
+  if (space && space.status === 'occupied') {
+    space.status = 'available'
+    space.user = null
+    space.since = null
+    selectedSpace.value = space
+  }
+}
+
+function getOccupiedDuration(since) {
+  const startTime = new Date(since)
+  const now = new Date()
+  const diffMs = now - startTime
+  const hours = Math.floor(diffMs / (1000 * 60 * 60))
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+  return `${hours}h ${minutes}m`
+}
+
+function showRequestDetails(request) {
+  selectedRequest.value = request
+}
+
+function showUserDetails(user) {
+  selectedUser.value = user
+}
+
+function refreshData() {
+  loadMockData()
+  recentActivities.value.unshift({
+    id: Date.now(),
+    type: 'System',
+    description: 'Dashboard data refreshed',
+    time: new Date().toISOString()
+  })
+}
+
+function loadMockData() {
+  parkingSpaces.value = Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    status: Math.random() > 0.5 ? 'available' : 'occupied',
+    user: Math.random() > 0.5 ? `User ${Math.floor(Math.random() * 10)}` : null,
+    since: Math.random() > 0.5 ? new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString() : null
+  }))
+
+  history.value = Array.from({ length: 100 }, (_, i) => ({
+    id: i + 1,
+    spaceId: Math.floor(Math.random() * 50) + 1,
+    user: `User ${Math.floor(Math.random() * 10)}`,
+    entryTime: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+    exitTime: Math.random() > 0.5 ? new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString() : null,
+    paymentStatus: Math.random() > 0.5 ? 'paid' : 'pending'
+  }))
+}
+
+function getHistoryDuration(record) {
+  if (!record.exitTime) return 'Still parked'
+  const entryTime = new Date(record.entryTime)
+  const exitTime = new Date(record.exitTime)
+  const diffMs = exitTime - entryTime
+  const hours = Math.floor(diffMs / (1000 * 60 * 60))
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+  return `${hours}h ${minutes}m`
+}
+
+
+function formatTime(time) {
+  if (!time) return 'N/A'
+  const date = new Date(time)
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+
+// Init
+onMounted(() => {
+  loadMockData()
+})
 </script>
