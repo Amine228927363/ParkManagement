@@ -1,8 +1,8 @@
 <!-- RequestParkingSpace.vue -->
 <template>
-    <div class="min-h-screen py-8 px-4 bg-gradient dark-gradient text-gray-100">
+    <div class="min-h-screen py-8 px-4 bg-gradient dark-gradient ">
       <!-- Header -->
-      <header class="max-w-6xl mx-auto mb-10 text-center">
+      <header class="max-w-6xl mx-auto mb-10 text-center text-gray-100">
         <div class="flex justify-start mb-4 text-7xl font-bold text-white">
           <h1>LEONI</h1>
         </div>
@@ -19,7 +19,7 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <!-- Full Name -->
                 <div class="col-span-1">
-                  <label for="fullName" class="block text-sm font-medium mb-2">Full Name</label>
+                  <label for="fullName" class="block text-sm text-gray-100 font-medium mb-2">Full Name</label>
                   <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                       <i class="fas fa-user"></i>
@@ -28,7 +28,8 @@
                       type="text" 
                       id="fullName" 
                       v-model="formData.fullName" 
-                      class="w-full py-2 px-10 rounded-lg bg-opacity-5 bg-white border border-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                      class="w-full py-2 px-10 rounded-lg bg-opacity-5 bg-white border
+                       border-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" 
                       placeholder="John Doe" 
                       required
                     >
@@ -37,15 +38,16 @@
   
                 <!-- Vehicle Type -->
                 <div class="col-span-1">
-                  <label for="vehicleType" class="block text-sm font-medium mb-2">Vehicle Type</label>
+                  <label for="vehicleType" class="block text-sm font-medium mb-2 text-gray-100">Vehicle Type</label>
                   <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                       <i class="fas fa-car"></i>
                     </span>
                     <select 
                       id="vehicleType" 
                       v-model="formData.vehicleType" 
-                      class="w-full py-2 px-10 rounded-lg bg-opacity-5 bg-white border border-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none" 
+                      class="w-full py-2 px-10 rounded-lg bg-opacity-5 bg-white border
+                       border-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none" 
                       required
                     >
                       <option value="" disabled selected>Select vehicle type</option>
@@ -64,7 +66,7 @@
   
                 <!-- License Plate -->
                 <div class="col-span-1">
-                  <label for="licensePlate" class="block text-sm font-medium mb-2">License Plate Number</label>
+                  <label for="licensePlate" class="block text-sm font-medium mb-2 text-gray-100">License Plate Number</label>
                   <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                       <i class="fas fa-id-card"></i>
@@ -81,8 +83,8 @@
                 </div>
   
                 <!-- Date & Time -->
-                <div class="col-span-1">
-                  <label for="arrivalTime" class="block text-sm font-medium mb-2">Date & Time of Arrival</label>
+                <div class="col-span-1 ">
+                  <label for="arrivalTime" class="block text-sm font-medium mb-2 text-gray-100">Date & Time of Arrival</label>
                   <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                       <i class="fas fa-calendar-alt"></i>
@@ -100,7 +102,7 @@
   
                 <!-- Duration -->
                 <div class="col-span-1">
-                  <label for="duration" class="block text-sm font-medium mb-2">Duration of Parking</label>
+                  <label for="duration" class="block text-sm font-medium mb-2 text-gray-100">Duration of Parking</label>
                   <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                       <i class="fas fa-clock"></i>
@@ -149,7 +151,7 @@
   
               <!-- Special Requirements -->
               <div class="mb-8">
-                <label for="specialRequirements" class="block text-sm font-medium mb-2">Special Requirements</label>
+                <label for="specialRequirements" class="block text-sm font-medium mb-2 text-gray-100">Special Requirements</label>
                 <div class="relative">
                   <textarea 
                     id="specialRequirements" 
@@ -162,7 +164,7 @@
               </div>
   
               <!-- Vehicle Image Upload -->
-              <div class="mb-8">
+              <div class="mb-8 text-gray-100">
                 <label class="block text-sm font-medium mb-2">Vehicle Image</label>
                 <div 
                   class="upload-area rounded-lg p-8 text-center cursor-pointer border-2 border-dashed border-gray-700 hover:border-blue-500 transition-colors"
@@ -216,7 +218,7 @@
           </div>
   
           <!-- Sidebar -->
-          <div class="w-full md:w-80 lg:w-96">
+          <div class="w-full md:w-80 lg:w-96 text-gray-100">
             <!-- Admin Note Card -->
             <div class="glass p-6 mb-6">
               <div class="flex items-start mb-4">
@@ -233,7 +235,7 @@
             </div>
   
             <!-- Parking Information Card -->
-            <div class="glass p-6">
+            <div class="glass p-6 text-gray-100">
               <div class="flex items-start mb-4">
                 <div class="bg-purple-500 rounded-full p-2 mr-3">
                   <i class="fas fa-parking text-white"></i>

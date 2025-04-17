@@ -2,19 +2,50 @@
 <template>
   <div class="min-h-screen bg-gray-100">
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white shadow-lg">
-      <div class="p-4 font-bold text-xl">Parking Admin</div>
-      <nav class="mt-8">
-        <button 
-          v-for="(tab, index) in tabs" 
-          :key="index"
-          @click="activeTab = tab.id"
-          :class="['w-full text-left p-4 hover:bg-gray-700 transition', 
-                  activeTab === tab.id ? 'bg-gray-700 border-l-4 border-blue-500' : '']">
-          {{ tab.name }}
-        </button>
-      </nav>
+    <!-- Sidebar -->
+<div 
+  class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white shadow-lg flex flex-col justify-between"
+>
+  <!-- Top Section -->
+  <div>
+    <!-- User Info / Logo -->
+    <div class="p-4 font-bold text-xl flex items-center justify-between">
+      Parking Admin
     </div>
+
+    <!-- Navigation -->
+    <nav class="mt-4">
+      <button 
+        v-for="(tab, index) in tabs" 
+        :key="index"
+        @click="activeTab = tab.id"
+        :class="[
+          'w-full text-left p-4 hover:bg-gray-700 transition flex items-center gap-2',
+          activeTab === tab.id ? 'bg-gray-700 border-l-4 border-blue-500' : ''
+        ]"
+      >
+        <span v-if="tab.icon">
+          <component :is="tab.icon" class="w-5 h-5" />
+        </span>
+        <span>{{ tab.name }}</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Bottom Section (Logout or Settings) -->
+  <div class="p-4 border-t border-gray-700">
+    <button 
+      class="w-full text-left p-2 hover:bg-gray-700 rounded flex items-center gap-2"
+      @click="logout"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
+      </svg>
+      Logout
+    </button>
+  </div>
+</div>
+
 
     <!-- Main Content -->
     <div class="ml-64 p-6">
@@ -75,114 +106,10 @@
           </div>
 
           <!-- Space Details Modal -->
-          <div v-if="selectedSpace" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg p-6 shadow-lg max-w-lg w-full">
-              <div class="flex justify-between mb-4">
-                <h3 class="text-xl font-bold">Space #{{ selectedSpace.id }}</h3>
-                <button @click="selectedSpace = null" class="text-gray-500 hover:text-gray-700">&times;</button>
-              </div>
-              <div class="mb-4">
-                <div class="mb-2">
-                  <span class="font-semibold">Status:</span> 
-                  <span :class="selectedSpace.status === 'available' ? 'text-green-500' : 'text-red-500'">
-                    {{ selectedSpace.status === 'available' ? 'Available' : 'Occupied' }}
-                  </span>
-                </div>
-                <div v-if="selectedSpace.status === 'occupied'">
-                  <div class="mb-2"><span class="font-semibold">User:</span> {{ selectedSpace.user }}</div>
-                  <div class="mb-2"><span class="font-semibold">Since:</span> {{ selectedSpace.since }}</div>
-                  <div class="mb-2"><span class="font-semibold">Duration:</span> {{ getOccupiedDuration(selectedSpace.since) }}</div>
-                </div>
-              </div>
-              <div class="flex justify-end gap-2">
-                <button 
-                  v-if="selectedSpace.status === 'occupied'"
-                  @click="releaseSpace(selectedSpace.id)" 
-                  class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  Release Space
-                </button>
-                <button 
-                  v-else
-                  @click="reserveSpace(selectedSpace.id)" 
-                  class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                >
-                  Reserve Space
-                </button>
-                <button @click="selectedSpace = null" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
+          
         </div>
 
-        <!-- History -->
-        <div v-if="activeTab === 'history'">
-          <div class="mb-4 flex justify-between items-center">
-            <h2 class="text-xl font-semibold">Parking History</h2>
-            <div class="flex gap-2">
-              <input 
-                v-model="historySearch" 
-                placeholder="Search user or space..." 
-                class="border p-2 rounded" 
-              />
-              <select v-model="historyFilter" class="border p-2 rounded">
-                <option value="all">All Records</option>
-                <option value="active">Active Only</option>
-                <option value="completed">Completed Only</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="min-w-full bg-white">
-              <thead>
-                <tr class="bg-gray-100 text-gray-600 text-left">
-                  <th class="py-3 px-4 font-semibold">ID</th>
-                  <th class="py-3 px-4 font-semibold">Space</th>
-                  <th class="py-3 px-4 font-semibold">User</th>
-                  <th class="py-3 px-4 font-semibold">Entry Time</th>
-                  <th class="py-3 px-4 font-semibold">Exit Time</th>
-                  <th class="py-3 px-4 font-semibold">Duration</th>
-                  <th class="py-3 px-4 font-semibold">Payment</th>
-                  <th class="py-3 px-4 font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="record in filteredHistory" :key="record.id" class="border-t">
-                  <td class="py-3 px-4">{{ record.id }}</td>
-                  <td class="py-3 px-4">Space #{{ record.spaceId }}</td>
-                  <td class="py-3 px-4">{{ record.user }}</td>
-                  <td class="py-3 px-4">{{ record.entryTime }}</td>
-                  <td class="py-3 px-4">{{ record.exitTime ? formatTime(record.exitTime) : 'Still parked' }}</td>
-                  <td class="py-3 px-4">{{ getHistoryDuration(record) }}</td>
-                  <td class="py-3 px-4">
-                    <span :class="record.paymentStatus === 'paid' ? 'text-green-500' : 'text-orange-500'">
-                      {{ record.paymentStatus }}
-                    </span>
-                  </td>
-                  <td class="py-3 px-4">
-                    <button 
-                      v-if="!record.exitTime" 
-                      @click="completeParking(record.id)"
-                      class="text-blue-500 hover:text-blue-700"
-                    >
-                      Complete
-                    </button>
-                    <button 
-                      v-if="record.paymentStatus === 'pending'" 
-                      @click="markAsPaid(record.id)"
-                      class="text-green-500 hover:text-green-700 ml-2"
-                    >
-                      Mark Paid
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+      
 
         <!-- Requests -->
         <div v-if="activeTab === 'requests'">
@@ -303,109 +230,7 @@
         </div>
 
         <!-- Users -->
-        <div v-if="activeTab === 'users'">
-          <div class="mb-4 flex justify-between items-center">
-            <h2 class="text-xl font-semibold">Registered Users</h2>
-            <div class="flex gap-2">
-              <input 
-                v-model="userSearch" 
-                placeholder="Search users..." 
-                class="border p-2 rounded" 
-              />
-              <select v-model="userFilter" class="border p-2 rounded">
-                <option value="all">All Users</option>
-                <option value="active">Active Only</option>
-                <option value="inactive">Inactive Only</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="min-w-full bg-white">
-              <thead>
-                <tr class="bg-gray-100 text-gray-600 text-left">
-                  <th class="py-3 px-4 font-semibold">ID</th>
-                  <th class="py-3 px-4 font-semibold">Name</th>
-                  <th class="py-3 px-4 font-semibold">Email</th>
-                  <th class="py-3 px-4 font-semibold">Status</th>
-                  <th class="py-3 px-4 font-semibold">Registered</th>
-                  <th class="py-3 px-4 font-semibold">Vehicle</th>
-                  <th class="py-3 px-4 font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="user in filteredUsers" :key="user.id" class="border-t">
-                  <td class="py-3 px-4">{{ user.id }}</td>
-                  <td class="py-3 px-4">{{ user.name }}</td>
-                  <td class="py-3 px-4">{{ user.email }}</td>
-                  <td class="py-3 px-4">
-                    <span :class="user.status === 'active' ? 'text-green-500' : 'text-gray-500'">
-                      {{ user.status }}
-                    </span>
-                  </td>
-                  <td class="py-3 px-4">{{ user.registeredAt }}</td>
-                  <td class="py-3 px-4">{{ user.vehicle }}</td>
-                  <td class="py-3 px-4 flex gap-2">
-                    <button 
-                      @click="showUserDetails(user)"
-                      class="text-blue-500 hover:text-blue-700"
-                    >
-                      View
-                    </button>
-                    <button 
-                      @click="toggleUserStatus(user.id)"
-                      :class="user.status === 'active' ? 'text-red-500 hover:text-red-700' : 'text-green-500 hover:text-green-700'"
-                      class="ml-2"
-                    >
-                      {{ user.status === 'active' ? 'Deactivate' : 'Activate' }}
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- User Details Modal -->
-          <div v-if="selectedUser" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg p-6 shadow-lg max-w-lg w-full">
-              <div class="flex justify-between mb-4">
-                <h3 class="text-xl font-bold">User: {{ selectedUser.name }}</h3>
-                <button @click="selectedUser = null" class="text-gray-500 hover:text-gray-700">&times;</button>
-              </div>
-              <div class="mb-4">
-                <div class="mb-2"><span class="font-semibold">ID:</span> {{ selectedUser.id }}</div>
-                <div class="mb-2"><span class="font-semibold">Email:</span> {{ selectedUser.email }}</div>
-                <div class="mb-2"><span class="font-semibold">Phone:</span> {{ selectedUser.phone }}</div>
-                <div class="mb-2"><span class="font-semibold">Status:</span> {{ selectedUser.status }}</div>
-                <div class="mb-2"><span class="font-semibold">Registered:</span> {{ formatTime(selectedUser.registeredAt) }}</div>
-                <div class="mb-2"><span class="font-semibold">Vehicle:</span> {{ selectedUser.vehicle }}</div>
-                <div class="mb-2"><span class="font-semibold">License Plate:</span> {{ selectedUser.licensePlate }}</div>
-              </div>
-              <div class="mb-4">
-                <h4 class="font-semibold mb-2">Parking History</h4>
-                <div class="max-h-40 overflow-y-auto">
-                  <div v-for="record in userParkingHistory(selectedUser.id)" :key="record.id" class="mb-2 border-b pb-2">
-                    <div><span class="font-semibold">Space:</span> #{{ record.spaceId }}</div>
-                    <div><span class="font-semibold">Entry:</span> {{ formatTime(record.entryTime) }}</div>
-                    <div><span class="font-semibold">Exit:</span> {{ record.exitTime ? formatTime(record.exitTime) : 'Still parked' }}</div>
-                  </div>
-                </div>
-              </div>
-              <div class="flex justify-end gap-2">
-                <button 
-                  @click="toggleUserStatus(selectedUser.id); selectedUser = null" 
-                  :class="selectedUser.status === 'active' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
-                  class="text-white px-4 py-2 rounded"
-                >
-                  {{ selectedUser.status === 'active' ? 'Deactivate' : 'Activate' }}
-                </button>
-                <button @click="selectedUser = null" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      
 
         <!-- Dashboard Home -->
         <div v-if="activeTab === 'dashboard'">
@@ -674,26 +499,5 @@ function loadMockData() {
   }))
 }
 
-function getHistoryDuration(record) {
-  if (!record.exitTime) return 'Still parked'
-  const entryTime = new Date(record.entryTime)
-  const exitTime = new Date(record.exitTime)
-  const diffMs = exitTime - entryTime
-  const hours = Math.floor(diffMs / (1000 * 60 * 60))
-  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
-  return `${hours}h ${minutes}m`
-}
 
-
-function formatTime(time) {
-  if (!time) return 'N/A'
-  const date = new Date(time)
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-
-// Init
-onMounted(() => {
-  loadMockData()
-})
 </script>

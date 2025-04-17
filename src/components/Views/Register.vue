@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { createUser } from '../../services/userServices';
+import { useRouter } from 'vue-router';
 
-// Form validation state
+// Form state
 const name = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
+const message = ref('');
 
 // Error states
 const nameError = ref('');
@@ -14,18 +17,18 @@ const passwordError = ref('');
 const confirmPasswordError = ref('');
 
 // Form validation
-const validateForm = () => {
+const validateForm = (): boolean => {
   let isValid = true;
-  
-  // Name validation
+
+  // Name
   if (!name.value) {
     nameError.value = 'Full name is required';
     isValid = false;
   } else {
     nameError.value = '';
   }
-  
-  // Email validation
+
+  // Email
   if (!email.value) {
     emailError.value = 'Email is required';
     isValid = false;
@@ -35,8 +38,8 @@ const validateForm = () => {
   } else {
     emailError.value = '';
   }
-  
-  // Password validation
+
+  // Password
   if (!password.value) {
     passwordError.value = 'Password is required';
     isValid = false;
@@ -46,8 +49,8 @@ const validateForm = () => {
   } else {
     passwordError.value = '';
   }
-  
-  // Confirm password validation
+
+  // Confirm password
   if (!confirmPassword.value) {
     confirmPasswordError.value = 'Please confirm your password';
     isValid = false;
@@ -57,23 +60,34 @@ const validateForm = () => {
   } else {
     confirmPasswordError.value = '';
   }
-  
+
   return isValid;
 };
 
+// Redirect setup
+const router = useRouter();
+
 // Submit handler
-const handleSubmit = () => {
-  if (validateForm()) {
-    // Handle registration logic here
-    console.log('Registration form submitted:', { 
+const handleSubmit = async () => {
+  if (!validateForm()) return;
+
+  try {
+    await createUser({
       name: name.value,
       email: email.value,
       password: password.value
     });
+    message.value = '✅ User created successfully!';
+    
+    // Redirect to login page
+    router.push('/login'); // Adjust this route to your login page's actual path
+    
+  } catch (error: any) {
+    console.error(error);
+    message.value = error?.response?.data?.message || '❌ Error creating user';
   }
 };
 </script>
-
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-12 flex flex-col justify-center">
     <!-- LEONI Logo -->
@@ -260,7 +274,6 @@ const handleSubmit = () => {
     </div>
   </div>
 </template>
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
