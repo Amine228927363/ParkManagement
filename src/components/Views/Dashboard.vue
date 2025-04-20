@@ -1,116 +1,12 @@
 // App.vue
 <template>
   <div class="min-h-screen bg-gray-100">
-    <!-- Sidebar -->
-    <!-- Sidebar -->
-<div 
-  class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white shadow-lg flex flex-col justify-between"
->
-  <!-- Top Section -->
-  <div>
-    <!-- User Info / Logo -->
-    <div class="p-4 font-bold text-xl flex items-center justify-between">
-      Parking Admin
-    </div>
-
-    <!-- Navigation -->
-    <nav class="mt-4">
-      <button 
-        v-for="(tab, index) in tabs" 
-        :key="index"
-        @click="activeTab = tab.id"
-        :class="[
-          'w-full text-left p-4 hover:bg-gray-700 transition flex items-center gap-2',
-          activeTab === tab.id ? 'bg-gray-700 border-l-4 border-blue-500' : ''
-        ]"
-      >
-        <span v-if="tab.icon">
-          <component :is="tab.icon" class="w-5 h-5" />
-        </span>
-        <span>{{ tab.name }}</span>
-      </button>
-    </nav>
-  </div>
-
-  <!-- Bottom Section (Logout or Settings) -->
-  <div class="p-4 border-t border-gray-700">
-    <button 
-      class="w-full text-left p-2 hover:bg-gray-700 rounded flex items-center gap-2"
-      @click="logout"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
-      </svg>
-      Logout
-    </button>
-  </div>
-</div>
-
-
+       <Sidebar :activeTab="activeTab" @setActive="setActive" />
     <!-- Main Content -->
     <div class="ml-64 p-6">
-      <header class="bg-white shadow-sm rounded-lg p-4 mb-6 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-800">{{ currentTab.name }}</h1>
-        <div class="flex gap-4">
-          <button @click="refreshData" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            Refresh Data
-          </button>
-          <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
-            Settings
-          </button>
-        </div>
-      </header>
-
+    
       <!-- Dashboard Content -->
-      <div class="bg-white shadow-sm rounded-lg p-6">
-        <!-- Parking Spaces -->
-        <div v-if="activeTab === 'spaces'">
-          <div class="mb-4 flex justify-between items-center">
-            <div>
-              <span class="mr-4 font-semibold">
-                Available: <span class="text-green-500">{{ availableSpaces }}</span>
-              </span>
-              <span class="font-semibold">
-                Occupied: <span class="text-red-500">{{ totalSpaces - availableSpaces }}</span>
-              </span>
-            </div>
-            <div class="flex gap-2">
-              <input 
-                v-model="spaceSearch" 
-                placeholder="Search space or user..." 
-                class="border p-2 rounded" 
-              />
-              <select v-model="spaceFilter" class="border p-2 rounded">
-                <option value="all">All Spaces</option>
-                <option value="available">Available Only</option>
-                <option value="occupied">Occupied Only</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-5 gap-4">
-            <div 
-              v-for="space in filteredSpaces" 
-              :key="space.id" 
-              :class="['p-4 rounded-lg shadow-sm border cursor-pointer', 
-                      space.status === 'available' ? 'bg-green-100 border-green-300' : 'bg-red-100 border-red-300']"
-              @click="showSpaceDetails(space)"
-            >
-              <div class="font-bold">Space #{{ space.id }}</div>
-              <div class="text-sm">{{ space.status === 'available' ? 'Available' : 'Occupied' }}</div>
-              <div v-if="space.status === 'occupied'" class="text-sm mt-1">
-                <div>User: {{ space.user }}</div>
-                <div>Since: {{ space.since }}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Space Details Modal -->
-          
-        </div>
-
-      
-
+      <div class="bg-white shadow-sm rounded-lg p-6">    
         <!-- Requests -->
         <div v-if="activeTab === 'requests'">
           <div class="mb-4 flex justify-between items-center">
@@ -268,34 +164,7 @@
           </div>
 
           <!-- Recent Activity and Spaces Overview -->
-          <div class="grid grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h3 class="font-bold mb-4">Recent Activity</h3>
-              <div class="max-h-64 overflow-y-auto">
-                <div v-for="activity in recentActivities" :key="activity.id" class="mb-3 pb-3 border-b">
-                  <div class="flex justify-between">
-                    <div class="font-semibold">{{ activity.type }}</div>
-                    <div class="text-sm text-gray-500">{{ activity.time }}</div>
-                  </div>
-                  <div class="text-sm">{{ activity.description }}</div>
-                </div>
-              </div>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h3 class="font-bold mb-4">Spaces Overview</h3>
-              <div class="grid grid-cols-8 gap-2">
-                <div 
-                  v-for="space in parkingSpaces.slice(0, 24)" 
-                  :key="space.id" 
-                  :class="['h-8 w-full rounded flex items-center justify-center text-xs font-bold cursor-pointer',
-                          space.status === 'available' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800']"
-                  @click="showSpaceDetails(space)"
-                >
-                  {{ space.id }}
-                </div>
-              </div>
-            </div>
-          </div>
+         
         </div>
       </div>
     </div>
@@ -304,9 +173,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-
-// Tabs and navigation
-const activeTab = ref('dashboard')
+import Sidebar from './sidebar.vue'
 const tabs = [
   { id: 'dashboard', name: 'Dashboard' },
   { id: 'spaces', name: 'Parking Spaces' },
@@ -355,10 +222,7 @@ const requestFilter = ref('all')
 const userSearch = ref('')
 const userFilter = ref('all')
 
-// Computed properties
-const currentTab = computed(() =>
-  tabs.find(tab => tab.id === activeTab.value)
-)
+
 
 const totalSpaces = computed(() => parkingSpaces.value.length)
 

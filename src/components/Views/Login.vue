@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Import the same font that we used in the landing page
 import { ref } from 'vue';
-
+import { login } from '../../services/authServices';
 // Form validation state
 const email = ref('');
 const password = ref('');
@@ -38,10 +38,26 @@ const validateForm = () => {
 };
 
 // Submit handler
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (validateForm()) {
-    // Handle login logic here
-    console.log('Form submitted:', { email: email.value, password: password.value });
+    try {
+      const data = await login({ email: email.value, password: password.value });
+
+      // Save token and role
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.role);
+      // Redirect based on role
+      if (data.role === 'ADMIN') {
+        window.location.href = '/dashboard';
+      } else if (data.role === 'SOS_USER') {
+        window.location.href = '/sosView';
+      } else {
+        window.location.href = '/';
+      }
+
+    } catch (error: any) {
+      console.error('Login error:', error.message);
+    }
   }
 };
 </script>

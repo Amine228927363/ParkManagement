@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen bg-gray-50">
     <!-- Sidebar -->
-    <aside class="w-64 bg-blue-800 text-white">
+    <aside class="w-64 bg-blue-950 text-white">
       <div class="p-4">
         <h1 class="text-xl font-bold">SOS System</h1>
         <p class="text-xs text-blue-200 mt-1">Vehicle Management</p>
