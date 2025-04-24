@@ -34,10 +34,10 @@
                 Status
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Last Access
+                Created At
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Vehicle
+                Role
               </th>
               <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -79,10 +79,10 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(user.lastLogin) }}
+                {{ formatDate(user.createdAt) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ user.vehicle ? user.vehicle : 'Not Assigned' }}
+                {{ user.role }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex justify-end space-x-2">
@@ -93,7 +93,7 @@
                     Edit
                   </button>
                   <button 
-                    @click="$emit('delete-user', user)"
+                    @click="$emit('delete-user', user.id)"
                     class="text-red-600 hover:text-red-900 transition-colors"
                   >
                     Delete
@@ -126,6 +126,7 @@
   });
   
   defineEmits(['edit-user', 'delete-user']);
+
   
   // Helper functions
   const getUserInitials = (name) => {

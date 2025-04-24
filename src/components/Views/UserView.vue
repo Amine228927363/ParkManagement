@@ -1,12 +1,12 @@
 <template>
   <div class="flex">
-    <!-- Sidebar (déjà importé) -->
-    <sidebarvue></sidebarvue>
-    /*
+    <!-- Sidebar -->
+    <sidebarvue />
+
     <!-- Main Content Area -->
     <div class="flex-1 p-6 bg-gray-100 min-h-screen">
       <div class="max-w-7xl mx-auto">
-        <!-- Header with Title and Create Button -->
+        <!-- Header -->
         <div class="flex justify-between items-center mb-6">
           <div>
             <h1 class="text-2xl font-bold text-gray-800">SOS Users</h1>
@@ -25,15 +25,15 @@
 
         <!-- Filters and Search -->
         <UserFilters @filter-changed="applyFilters" />
-        
+
         <!-- Users Table -->
         <UsersTable 
-          :users="filteredUsers" 
-          @edit-user="openEditUserModal" 
-          @delete-user="openDeleteUserModal" 
+          :users="paginatedUsers" 
+          @edit-user="openEditUserModal"
+          @delete-user="deleteUser"
         />
-        
-        <!-- Pagination Component -->
+
+        <!-- Pagination -->
         <Pagination 
           :total-pages="totalPages"
           :current-page="currentPage"
@@ -41,22 +41,13 @@
         />
       </div>
     </div>
-    
-    <!-- User Modal (Create/Edit) -->
+
+    <!-- Modal -->
     <UserFormModal 
       v-if="showUserModal"
       :is-edit="isEditMode"
       :user="selectedUser"
       @close="closeUserModal"
-      @save="saveUser"
-    />
-    
-    <!-- Delete Confirmation Modal -->
-    <DeleteConfirmModal
-      v-if="showDeleteModal"
-      :user="selectedUser"
-      @close="closeDeleteModal"
-      @confirm="deleteUser"
     />
   </div>
 </template>
@@ -64,47 +55,46 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import sidebarvue from './sidebar.vue';
-/*
-import UserFilters from './components/UserFilters.vue';
-import UsersTable from './components/UsersTable.vue';
-import Pagination from './components/Pagination.vue';
-import UserFormModal from './components/UserFormModal.vue';
-import DeleteConfirmModal from './components/DeleteConfirmModal.vue';*/
+import UserFormModal from './UserFormModal.vue';
+import UserFilters from './UserFilters.vue';
+import UsersTable from './UsersTable.vue';
+import Pagination from './Pagination.vue';
+import { createUser, getSOSUsers, updateUser, deleteUserById } from '../../services/userServices'; 
 
-// User data state
 const users = ref([]);
 const filteredUsers = ref([]);
 const isLoading = ref(true);
 const error = ref(null);
 
-// Pagination state
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
-const totalPages = computed(() => Math.ceil(filteredUsers.value.length / itemsPerPage.value));
+const itemsPerPage = 10;
+const totalPages = computed(() => Math.ceil(filteredUsers.value.length / itemsPerPage));
+const paginatedUsers = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return filteredUsers.value.slice(start, start + itemsPerPage);
+});
 
-// Modal state
 const showUserModal = ref(false);
 const isEditMode = ref(false);
 const selectedUser = ref(null);
-const showDeleteModal = ref(false);
 
-// Fetch users data
 onMounted(async () => {
-  try {
-    isLoading.value = true;
-    // Replace with your actual API call
-    const response = await fetch('/api/sos-users');
-    const data = await response.json();
-    users.value = data;
-    filteredUsers.value = data;
-    isLoading.value = false;
-  } catch (err) {
-    error.value = "Failed to load users. Please try again.";
-    isLoading.value = false;
-  }
+  await fetchUsers();
 });
 
-// Modal handlers
+const fetchUsers = async () => {
+  try {
+    isLoading.value = true;
+    const { data } = await getSOSUsers();
+    users.value = data;
+    filteredUsers.value = data;
+  } catch (err) {
+    error.value = 'Failed to load users. Please try again.';
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 const openCreateUserModal = () => {
   selectedUser.value = null;
   isEditMode.value = false;
@@ -122,96 +112,42 @@ const closeUserModal = () => {
   selectedUser.value = null;
 };
 
-const openDeleteUserModal = (user) => {
-  selectedUser.value = user;
-  showDeleteModal.value = true;
-};
 
-const closeDeleteModal = () => {
-  showDeleteModal.value = false;
-  selectedUser.value = null;
-};
 
-// Action handlers
-const saveUser = async (userData) => {
+const deleteUser = async (userId) => {
   try {
-    // Handle create or update based on isEditMode
-    if (isEditMode.value) {
-      // Update existing user
-      await fetch(`/api/sos-users/${userData.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
-      });
-      
-      // Update local data
-      const index = users.value.findIndex(u => u.id === userData.id);
-      if (index !== -1) {
-        users.value[index] = { ...userData };
-      }
-    } else {
-      // Create new user
-      const response = await fetch('/api/sos-users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
-      });
-      
-      const newUser = await response.json();
-      users.value.push(newUser);
-    }
-    
-    // Apply current filters to update filtered users
-    applyFilters();
-    closeUserModal();
+    await deleteUserById(userId);
+    users.value = users.value.filter(u => u.id !== userId);
+    filteredUsers.value = filteredUsers.value.filter(u => u.id !== userId);
   } catch (err) {
-    // Handle error
-    console.error('Error saving user:', err);
+    console.error('Delete user failed:', err);
   }
 };
 
-const deleteUser = async () => {
-  if (!selectedUser.value) return;
-  
-  try {
-    await fetch(`/api/sos-users/${selectedUser.value.id}`, {
-      method: 'DELETE'
-    });
-    
-    // Remove from local data
-    users.value = users.value.filter(u => u.id !== selectedUser.value.id);
-    filteredUsers.value = filteredUsers.value.filter(u => u.id !== selectedUser.value.id);
-    closeDeleteModal();
-  } catch (err) {
-    console.error('Error deleting user:', err);
-  }
-};
-
-// Filter handling
 const applyFilters = (filters = {}) => {
-  // Apply filters to users array
   let result = [...users.value];
-  
+
   if (filters.search) {
-    const searchTerm = filters.search.toLowerCase();
+    const term = filters.search.toLowerCase();
     result = result.filter(user => 
-      user.name.toLowerCase().includes(searchTerm) || 
-      user.email.toLowerCase().includes(searchTerm)
+      user.name.toLowerCase().includes(term) || 
+      user.email.toLowerCase().includes(term)
     );
   }
-  
+
   if (filters.status) {
     result = result.filter(user => user.status === filters.status);
   }
-  
-  // Apply any other filters as needed
-  
+
   filteredUsers.value = result;
-  currentPage.value = 1; // Reset to first page when filters change
+  currentPage.value = 1;
 };
 
-// Pagination handler
 const changePage = (page) => {
   currentPage.value = page;
 };
 </script>
+
+<style scoped>
+/* Add component-specific styles here if needed */
+</style>

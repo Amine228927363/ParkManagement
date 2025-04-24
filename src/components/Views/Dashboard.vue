@@ -1,12 +1,13 @@
 // App.vue
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="flex min-h-screen bg-gray-100">
        <Sidebar :activeTab="activeTab" @setActive="setActive" />
     <!-- Main Content -->
-    <div class="ml-64 p-6">
-    
+    <div class="p-3 flex-1">
+      
       <!-- Dashboard Content -->
-      <div class="bg-white shadow-sm rounded-lg p-6">    
+      <div class="bg-white shadow-sm rounded-lg p-6">
+        <Satistic :totalSpaces="totalSpaces" :availableSpaces="availableSpaces" @refresh="refreshData" />
         <!-- Requests -->
         <div v-if="activeTab === 'requests'">
           <div class="mb-4 flex justify-between items-center">
@@ -25,7 +26,7 @@
               </select>
             </div>
           </div>
-
+          <Satistic :totalSpaces="totalSpaces" :availableSpaces="availableSpaces" @refresh="refreshData" />
           <div class="overflow-x-auto">
             <table class="min-w-full bg-white">
               <thead>
@@ -174,14 +175,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import Sidebar from './sidebar.vue'
-const tabs = [
-  { id: 'dashboard', name: 'Dashboard' },
-  { id: 'spaces', name: 'Parking Spaces' },
-  { id: 'history', name: 'History' },
-  { id: 'requests', name: 'User Requests' },
-  { id: 'users', name: 'Registered Users' },
-]
-
+import Satistic from './DashboardComponents/Satistic.vue'
 // State
 const parkingSpaces = ref([
   { id: 1, number: "A1", status: "occupied", vehicle: "ABC-123", since: "10:30 AM" },
