@@ -6,6 +6,7 @@ import Dashboard from '../components/Views/Dashboard.vue'
 import UserView from '../components/Views/UserView.vue'
 import sosView from '../components/Views/sosUser/sosView.vue'
 import accountRequest from '../components/Views/sosUser/accountRequest.vue'
+import accountRequestView from '../components/Views/DashboardComponents/accountRequestView.vue'
 const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: Login },
@@ -13,7 +14,8 @@ const routes = [
   { path: '/dashboard', name: 'Dashboard', component: Dashboard ,meta: { requiresAuth: true, requiresRole: 'ADMIN' }},
   { path: '/sos-users', name: 'user', component: UserView},
   { path: '/sosView', name: 'sos', component: sosView,meta: { requiresAuth: true, requiresRole: 'SOS_USER' }},
-  { path: '/accountRequest', name: 'request', component: accountRequest}
+  { path: '/accountRequest', name: 'request', component: accountRequest},
+  { path: '/manageAccountRequests', name: 'request', component: accountRequestView,meta: { requiresAuth: true, requiresRole: 'ADMIN' }},
 ]
 
 const router = createRouter({

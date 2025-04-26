@@ -139,7 +139,7 @@ import { useRouter } from 'vue-router'
 import {
   HomeIcon,
   UsersIcon,
-  TruckIcon,
+ 
   Cog6ToothIcon,
   ChartBarSquareIcon,
   ClipboardDocumentListIcon,
@@ -166,7 +166,7 @@ const userInitials = computed(() => {
 const mainMenuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: HomeIcon, path: '/dashboard' },
   { id: 'sosUsers', label: 'SOS Users', icon: UsersIcon, path: '/sos-users' },
-  { id: 'vehicles', label: 'Vehicles', icon: TruckIcon, path: '/vehicles' },
+  { id: 'Account Requests', label: 'Account Requests', icon:ClipboardDocumentListIcon , path: '/manageAccountRequests' },
   { id: 'reports', label: 'Reports', icon: ChartBarSquareIcon, path: '/reports' },
 ]
 

@@ -52,6 +52,10 @@
     { id: 'B2', status: 'occupied' },
     { id: 'B3', status: 'available' },
     { id: 'B4', status: 'occupied' },
+    { id: 'B5', status: 'occupied' },
+    { id: 'B6', status: 'occupied' },
+    { id: 'B7', status: 'occupied' },
+    { id: 'B8', status: 'occupied' },
   ])
   
   const currentDate = ref(
