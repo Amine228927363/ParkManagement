@@ -42,112 +42,117 @@
       </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Create / Update Modal -->
     <UserFormModal 
       v-if="showUserModal"
       :is-edit="isEditMode"
       :user="selectedUser"
+      @save="handleUserSaved"
       @close="closeUserModal"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import sidebarvue from './sidebar.vue';
-import UserFormModal from './UserFormModal.vue';
-import UserFilters from './UserFilters.vue';
-import UsersTable from './UsersTable.vue';
-import Pagination from './Pagination.vue';
-import { createUser, getSOSUsers, updateUser, deleteUserById } from '../../services/userServices'; 
+import { ref, computed, onMounted } from 'vue'
+import sidebarvue from './sidebar.vue'
+import UserFormModal from './UserFormModal.vue' // ✅ Correct one, not updateUserForm
+import UserFilters from './UserFilters.vue'
+import UsersTable from './UsersTable.vue'
+import Pagination from './Pagination.vue'
+import { createUser, getSOSUsers, updateUser, deleteUserById } from '../../services/userServices'
 
-const users = ref([]);
-const filteredUsers = ref([]);
-const isLoading = ref(true);
-const error = ref(null);
+const users = ref([])
+const filteredUsers = ref([])
+const isLoading = ref(true)
+const error = ref(null)
 
-const currentPage = ref(1);
-const itemsPerPage = 10;
-const totalPages = computed(() => Math.ceil(filteredUsers.value.length / itemsPerPage));
+const currentPage = ref(1)
+const itemsPerPage = 10
+const totalPages = computed(() => Math.ceil(filteredUsers.value.length / itemsPerPage))
 const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return filteredUsers.value.slice(start, start + itemsPerPage);
-});
+  const start = (currentPage.value - 1) * itemsPerPage
+  return filteredUsers.value.slice(start, start + itemsPerPage)
+})
 
-const showUserModal = ref(false);
-const isEditMode = ref(false);
-const selectedUser = ref(null);
+const showUserModal = ref(false)
+const isEditMode = ref(false)
+const selectedUser = ref(null)
 
 onMounted(async () => {
-  await fetchUsers();
-});
+  await fetchUsers()
+})
 
 const fetchUsers = async () => {
   try {
-    isLoading.value = true;
-    const { data } = await getSOSUsers();
-    users.value = data;
-    filteredUsers.value = data;
+    isLoading.value = true
+    const { data } = await getSOSUsers()
+    users.value = data
+    filteredUsers.value = data
   } catch (err) {
-    error.value = 'Failed to load users. Please try again.';
+    error.value = 'Failed to load users. Please try again.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const openCreateUserModal = () => {
-  selectedUser.value = null;
-  isEditMode.value = false;
-  showUserModal.value = true;
-};
+  selectedUser.value = null
+  isEditMode.value = false
+  showUserModal.value = true
+}
 
 const openEditUserModal = (user) => {
-  selectedUser.value = { ...user };
-  isEditMode.value = true;
-  showUserModal.value = true;
-};
+  selectedUser.value = { ...user }
+  isEditMode.value = true
+  showUserModal.value = true
+}
 
 const closeUserModal = () => {
-  showUserModal.value = false;
-  selectedUser.value = null;
-};
+  showUserModal.value = false
+  selectedUser.value = null
+}
 
+// when user created or updated
+const handleUserSaved = async () => {
+  closeUserModal()
+  await fetchUsers() // Refresh list
+}
 
-
-const deleteUser = async (userId) => {
+const deleteUser = async (userId: number) => {
   try {
-    await deleteUserById(userId);
-    users.value = users.value.filter(u => u.id !== userId);
-    filteredUsers.value = filteredUsers.value.filter(u => u.id !== userId);
+    await deleteUserById(userId)
+    users.value = users.value.filter(u => u.id !== userId)
+    filteredUsers.value = filteredUsers.value.filter(u => u.id !== userId)
   } catch (err) {
-    console.error('Delete user failed:', err);
+    console.error('Delete user failed:', err)
   }
-};
+}
 
 const applyFilters = (filters = {}) => {
-  let result = [...users.value];
+  let result = [...users.value]
 
   if (filters.search) {
-    const term = filters.search.toLowerCase();
+    const term = filters.search.toLowerCase()
     result = result.filter(user => 
       user.name.toLowerCase().includes(term) || 
       user.email.toLowerCase().includes(term)
-    );
+    )
   }
 
   if (filters.status) {
-    result = result.filter(user => user.status === filters.status);
+    result = result.filter(user => user.status === filters.status)
   }
 
-  filteredUsers.value = result;
-  currentPage.value = 1;
-};
+  filteredUsers.value = result
+  currentPage.value = 1
+}
 
-const changePage = (page) => {
-  currentPage.value = page;
-};
+const changePage = (page: number) => {
+  currentPage.value = page
+}
 </script>
 
 <style scoped>
-/* Add component-specific styles here if needed */
+/* Custom styling if needed */
 </style>

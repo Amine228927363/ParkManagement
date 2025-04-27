@@ -1,5 +1,4 @@
-<!-- CreateUserModal.vue -->
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue'
 import { defineProps, defineEmits } from 'vue'
 import axios from 'axios'
@@ -15,8 +14,25 @@ const formData = ref({
   name: '',
   email: '',
   role: 'SOS_USER',
-  password: ''
+  password: '',
+  status: 'ACTIVE'
 })
+
+watch(() => props.user, (newVal) => {
+  if (newVal) {
+    formData.value = { 
+      name: newVal.name || '',
+      email: newVal.email || '',
+      role: newVal.role || 'SOS_USER',
+      password: '', // Don't prefill password for security
+      status: newVal.status || 'ACTIVE'
+    }
+  } else {
+    formData.value = { name: '', email: '', role: 'SOS_USER', password: '', status: 'ACTIVE' }
+  }
+}, { immediate: true })
+
+const isLoading = ref(false)
 
 const generatePassword = () => {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
@@ -27,16 +43,6 @@ const generatePassword = () => {
   formData.value.password = password
 }
 
-watch(() => props.user, (newVal) => {
-  if (newVal) {
-    formData.value = { ...newVal }
-  } else {
-    formData.value = { name: '', email: '', role: 'SOS_USER', password: '' }
-  }
-}, { immediate: true })
-
-const isLoading = ref(false)
-
 const validateForm = () => {
   if (!formData.value.name.trim()) {
     alert('Name is required.')
@@ -46,7 +52,7 @@ const validateForm = () => {
     alert('A valid email is required.')
     return false
   }
-  if (!formData.value.password || formData.value.password.length < 6) {
+  if (!props.isEdit && (!formData.value.password || formData.value.password.length < 6)) {
     alert('Password must be at least 6 characters long.')
     return false
   }
@@ -59,32 +65,48 @@ const submitForm = async () => {
   isLoading.value = true
 
   try {
-    const response = await axios.post('http://localhost:3000/api/auth/register', formData.value)
-    alert('User created successfully!')
+    let response
+    if (props.isEdit && props.user?.id) {
+      // Update user (including status now)
+      response = await axios.put(`http://localhost:3000/api/users/updateUser/${props.user.id}`, {
+        name: formData.value.name,
+        email: formData.value.email,
+        role: formData.value.role,
+        password: formData.value.password ? formData.value.password : undefined,
+        status: formData.value.status
+      })
+      alert('User updated successfully!')
+    } else {
+      // Create user
+      response = await axios.post('http://localhost:3000/api/auth/register', formData.value)
+      alert('User created successfully!')
+    }
+
     emit('save', response.data)
     emit('close')
+
   } catch (error) {
-    console.error('Error creating user:', error)
-    if (error.response && error.response.data && error.response.data.message) {
+    console.error('Error saving user:', error)
+    if (error.response?.data?.message) {
       alert(`Error: ${error.response.data.message}`)
     } else {
-      alert('Failed to create user. Please try again later.')
+      alert('Failed to save user. Please try again later.')
     }
   } finally {
     isLoading.value = false
   }
 }
-
 </script>
 
 <template>
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
-      <h2 class="text-xl font-semibold mb-4">Create User</h2>
+      <h2 class="text-xl font-semibold mb-4">{{ isEdit ? 'Update User' : 'Create User' }}</h2>
       <form @submit.prevent="submitForm">
         <input v-model="formData.name" type="text" placeholder="Name" class="w-full border p-2 mb-2" />
         <input v-model="formData.email" type="email" placeholder="Email" class="w-full border p-2 mb-2" />
-        <div class="relative">
+        
+        <div v-if="!isEdit" class="relative">
           <input 
             v-model="formData.password" 
             type="text" 
@@ -100,13 +122,30 @@ const submitForm = async () => {
           </button>
         </div>
 
-        <input v-model="formData.role" type="hidden" class="w-full border p-2 mb-2" />
-        
+        <input v-model="formData.role" type="hidden" />
+        <div v-if="isEdit" class="mb-4">
+          <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select 
+            v-model="formData.status" 
+            id="status"
+            class="w-full border p-2 rounded"
+          >
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+
         <div class="flex justify-end gap-2 mt-4">
           <button type="button" @click="$emit('close')" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+          <button :disabled="isLoading" type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
+            {{ isEdit ? 'Update' : 'Save' }}
+          </button>
         </div>
       </form>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Optional modal styling */
+</style>

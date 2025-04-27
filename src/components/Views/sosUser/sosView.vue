@@ -140,142 +140,160 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <!-- Camera Section -->
           <div class="lg:col-span-2">
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-              <div class="p-4 border-b border-gray-200">
-                <h2 class="text-lg font-medium text-gray-900">Vehicle Entry</h2>
-                <p class="mt-1 text-sm text-gray-500">Take a photo and system will recognize details automatically</p>
-              </div>
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="p-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Vehicle Entry</h2>
+      <p class="mt-1 text-sm text-gray-500">Take a photo or upload an image for automatic detail recognition</p>
+    </div>
 
-              <div class="p-4">
-                <!-- Camera View -->
-                <div class="relative">
-                  <video 
-                    ref="videoElement" 
-                    class="w-full h-64 bg-black object-cover rounded-lg"
-                    v-show="!imageCaptured"
-                  ></video>
-                  <img 
-                    v-if="imageCaptured" 
-                    :src="capturedImage" 
-                    class="w-full h-64 object-cover rounded-lg"
-                    alt="Captured vehicle" 
-                  />
+    <div class="p-4">
+      <!-- Camera View -->
+      <div class="relative">
+        <video 
+          ref="videoElement" 
+          class="w-full h-64 bg-black object-cover rounded-lg"
+          v-show="!imageCaptured"
+        ></video>
+        <img 
+          v-if="imageCaptured" 
+          :src="capturedImage" 
+          class="w-full h-64 object-cover rounded-lg"
+          alt="Captured vehicle" 
+        />
 
-                  <!-- Camera Controls -->
-                  <div class="absolute bottom-4 left-0 right-0 flex justify-center">
-                    <button 
-                      v-if="!imageCaptured"
-                      @click="captureImage" 
-                      class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </button>
-                    <div v-else class="flex space-x-3">
-                      <button 
-                        @click="retakeImage" 
-                        class="bg-gray-600 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 focus:outline-none"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                      </button>
-                      <button 
-                        @click="saveImage" 
-                        class="bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700 focus:outline-none"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Vehicle Details Form - Auto-filled after image capture -->
-                <div class="mt-6">
-                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                      <label for="licensePlate" class="block text-sm font-medium text-gray-700">License Plate</label>
-                      <input 
-                        type="text" 
-                        id="licensePlate" 
-                        v-model="vehicleInfo.licensePlate"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        :class="{'bg-green-50': vehicleInfo.autoDetected}"
-                      />
-                      <span v-if="vehicleInfo.autoDetected" class="text-xs text-green-600">Auto-detected</span>
-                    </div>
-                    <div>
-                      <label for="model" class="block text-sm font-medium text-gray-700">Vehicle Model</label>
-                      <input 
-                        type="text" 
-                        id="model" 
-                        v-model="vehicleInfo.model"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        :class="{'bg-green-50': vehicleInfo.autoDetected}"
-                      />
-                      <span v-if="vehicleInfo.autoDetected" class="text-xs text-green-600">Auto-detected</span>
-                    </div>
-                    <div>
-                      <label for="make" class="block text-sm font-medium text-gray-700">Make</label>
-                      <input 
-                        type="text" 
-                        id="make" 
-                        v-model="vehicleInfo.make"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        :class="{'bg-green-50': vehicleInfo.autoDetected}"
-                      />
-                      <span v-if="vehicleInfo.autoDetected" class="text-xs text-green-600">Auto-detected</span>
-                    </div>
-                    <div>
-                      <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
-                      <input 
-                        type="text" 
-                        id="color" 
-                        v-model="vehicleInfo.color"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        :class="{'bg-green-50': vehicleInfo.autoDetected}"
-                      />
-                      <span v-if="vehicleInfo.autoDetected" class="text-xs text-green-600">Auto-detected</span>
-                    </div>
-                    <div>
-                      <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-                      <input 
-                        type="text" 
-                        id="notes" 
-                        v-model="vehicleInfo.notes"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label for="space" class="block text-sm font-medium text-gray-700">Assigned Space</label>
-                      <select 
-                        id="space" 
-                        v-model="vehicleInfo.space"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      >
-                        <option value="">Auto-assign</option>
-                        <option v-for="space in availableSpaces" :key="space" :value="space">Space {{ space }}</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="mt-4 flex justify-end">
-                    <button 
-                      @click="submitEntry" 
-                      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      :disabled="!imageCaptured"
-                    >
-                      Register Entry
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <!-- Camera/Upload Controls -->
+        <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-3">
+          <!-- Camera Button -->
+          <button 
+            v-if="!imageCaptured"
+            @click="captureImage" 
+            class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+          
+          <!-- Upload Button -->
+          <label 
+            v-if="!imageCaptured"
+            class="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 focus:outline-none cursor-pointer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <input 
+              type="file" 
+              accept="image/*" 
+              @change="handleFileUpload" 
+              class="hidden"
+            />
+          </label>
+          
+          <!-- Retake/Save Buttons (After Capture) -->
+          <div v-else class="flex space-x-3">
+            <button 
+              @click="retakeImage" 
+              class="bg-gray-600 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 focus:outline-none"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+            <button 
+              @click="saveImage" 
+              class="bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700 focus:outline-none"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Details Form - Auto-filled after image capture -->
+      <div class="mt-6">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="licensePlate" class="block text-sm font-medium text-gray-700">License Plate</label>
+            <input 
+              type="text" 
+              id="licensePlate" 
+              v-model="vehicleInfo.vehiclePlate"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              :class="{'bg-green-50': vehicleInfo.autoDetected}"
+            />
+            <span v-if="vehicleInfo.autoDetected" class="text-xs text-green-600">Auto-detected</span>
+          </div>
+          <div>
+            <label for="model" class="block text-sm font-medium text-gray-700">Vehicle Model</label>
+            <input 
+              type="text" 
+              id="model" 
+              v-model="vehicleInfo.vehicleType"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              :class="{'bg-green-50': vehicleInfo.autoDetected}"
+            />
+            <span v-if="vehicleInfo.autoDetected" class="text-xs text-green-600">Auto-detected</span>
+          </div>
+          
+          <div>
+            <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
+            <input 
+              type="text" 
+              id="color" 
+              v-model="vehicleInfo.vehicleColor"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              :class="{'bg-green-50': vehicleInfo.autoDetected}"
+            />
+            <span v-if="vehicleInfo.autoDetected" class="text-xs text-green-600">Auto-detected</span>
+          </div>
+          <div>
+            <label for="notes" class="block text-sm font-medium text-gray-700">owner</label>
+            <input 
+              type="text" 
+              id="owner" 
+              v-model="vehicleInfo.supplierName"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label for="notes" class="block text-sm font-medium text-gray-700">Company</label>
+            <input 
+              type="text" 
+              id="company" 
+              v-model="vehicleInfo.companyName"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label for="space" class="block text-sm font-medium text-gray-700">Assigned Space</label>
+            <select 
+              id="space" 
+              v-model="vehicleInfo.parkingSpace"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            >
+              <option value="">Auto-assign</option>
+              <option v-for="space in availableSpaces" :key="space" :value="space">Space {{ space }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+          <button 
+            @click="submitEntry" 
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            :disabled="!imageCaptured"
+          >
+            Register Entry
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
           <!-- Recent Entries -->
           <div>
@@ -373,216 +391,298 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'SOSUserDashboard',
-  data() {
-    return {
-      currentUser: {
-        name: 'SOS Officer',
-        role: 'SOS_USER'
-      },
-      stream: null,
-      imageCaptured: false,
-      capturedImage: null,
-      vehicleInfo: {
-        licensePlate: '',
-        model: '',
-        make: '',
-        color: '',
-        notes: '',
-        space: '',
-        autoDetected: false
-      },
-      recentEntries: [],
-      stats: {
-        todayEntries: 42,
-        totalVehicles: 135,
-        availableSpaces: 65,
-        averageStay: '2.3h'
-      },
-      availableSpaces: [101, 102, 103, 105, 107, 110, 115, 120],
-      notification: {
-        show: false,
-        message: '',
-        type: 'success'
-      }
+<script setup lang="ts">
+import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
+import { analyzeCarImage } from '../../../services/geminiModel'
+import getSosUserId from '../../../utils/getUserId'
+import { createArrival } from '../../../services/arrival'
+
+// States
+const currentUser = reactive({
+  name: 'SOS Officer',
+  role: 'SOS_USER'
+})
+
+const stream = ref<MediaStream | null>(null)
+const imageCaptured = ref(false)
+const capturedImage = ref<string | null>(null)
+
+const vehicleInfo = reactive({
+  vehiclePlate: '',
+  vehicleType: '',
+  vehicleColor: '',
+  supplierName: '',
+  companyName: '',
+  parkingSpace: '',
+  autoDetected: false,
+})
+
+const recentEntries = ref<any[]>([])
+const stats = reactive({
+  todayEntries: 42,
+  totalVehicles: 135,
+  availableSpaces: 65,
+  averageStay: '2.3h'
+})
+
+const availableSpaces = ref([101, 102, 103, 105, 107, 110, 115, 120])
+
+const notification = reactive({
+  show: false,
+  message: '',
+  type: 'success'
+})
+const retakeImage = () => {
+  imageCaptured.value = false
+  capturedImage.value = null
+  Object.assign(vehicleInfo, {
+    vehiclePlate: '',
+  vehicleType: '',
+  vehicleColor: '',
+  supplierName: '',
+  companyName: '',
+  parkingSpace: '',
+  autoDetected: false,
+  })
+}
+// Computed
+const capacityPercentage = computed(() => {
+  const total = stats.totalVehicles + stats.availableSpaces
+  return Math.round((stats.totalVehicles / total) * 100)
+})
+
+// Camera
+const initCamera = async () => {
+  try {
+    stream.value = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    const videoElement = document.querySelector('video') as HTMLVideoElement
+    if (videoElement && stream.value) {
+      videoElement.srcObject = stream.value
+      await videoElement.play()
     }
-  },
-  computed: {
-    capacityPercentage() {
-      const total = this.stats.totalVehicles + this.stats.availableSpaces;
-      return Math.round((this.stats.totalVehicles / total) * 100);
-    }
-  },
-  mounted() {
-    this.initCamera();
-    this.fetchRecentEntries();
-    this.fetchDashboardStats();
-  },
-  beforeUnmount() {
-    this.stopCamera();
-  },
-  methods: {
-    async initCamera() {
-      try {
-        this.stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'environment' } 
-        });
-        
-        this.$refs.videoElement.srcObject = this.stream;
-        this.$refs.videoElement.play();
-      } catch (err) {
-        console.error('Error accessing camera:', err);
-        this.showNotification('Camera access denied. Please check permissions.', 'error');
-      }
-    },
-    stopCamera() {
-      if (this.stream) {
-        const tracks = this.stream.getTracks();
-        tracks.forEach(track => track.stop());
-      }
-    },
-    captureImage() {
-      const video = this.$refs.videoElement;
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      this.capturedImage = canvas.toDataURL('image/jpeg');
-      this.imageCaptured = true;
-      
-      // Simulate auto-detection of vehicle details
-      this.detectVehicleDetails();
-    },
-    detectVehicleDetails() {
-      // In a real application, this would send the image to an AI/ML service
-      // Here we'll simulate a response after a delay
-      
-      this.showNotification('Processing image...', 'success');
-      
-      setTimeout(() => {
-        // Mock data - in real life this would come from the AI service
-        const detectedData = {
-          licensePlate: 'ABC 123',
-          make: 'Toyota',
-          model: 'Corolla',
-          color: 'Silver',
-          year: '2023'
-        };
-        
-        // Populate form fields with detected data
-        this.vehicleInfo = {
-          ...this.vehicleInfo,
-          licensePlate: detectedData.licensePlate,
-          make: detectedData.make,
-          model: detectedData.model,
-          color: detectedData.color,
-          autoDetected: true
-        };
-        
-        this.showNotification('Vehicle details detected successfully', 'success');
-      }, 1500);
-    },
-    retakeImage() {
-      this.imageCaptured = false;
-      this.capturedImage = null;
-      this.vehicleInfo = {
-        licensePlate: '',
-        model: '',
-        make: '',
-        color: '',
-        notes: '',
-        space: '',
-        autoDetected: false
-      };
-    },
-    async submitEntry() {
-      // Validate input
-      if (!this.vehicleInfo.licensePlate) {
-        this.showNotification('License plate is required', 'error');
-        return;
-      }
-      
-      try {
-        // Convert base64 to blob for upload
-        const imageResponse = await fetch(this.capturedImage);
-        const blob = await imageResponse.blob(); 
-        const formData = new FormData();
-        formData.append('image', blob, 'vehicle.jpg');
-        formData.append('licensePlate', this.vehicleInfo.licensePlate);
-        formData.append('model', this.vehicleInfo.model);
-        formData.append('make', this.vehicleInfo.make);
-        formData.append('color', this.vehicleInfo.color);
-        formData.append('notes', this.vehicleInfo.notes);
-        formData.append('space', this.vehicleInfo.space);
-        formData.append('timestamp', new Date().toISOString());
-        formData.append('userId', this.currentUser.name); // Assuming user ID is the name for simplicity
-        formData.append('autoDetected', this.vehicleInfo.autoDetected);
-        formData.append('year', this.vehicleInfo.year); // Assuming year is part of vehicle info
-        const entryResponse = await fetch('/api/entries', {
-          method: 'POST',
-          body: formData
-        });
-        if (!response.ok) {
-          throw new Error('Failed to submit entry');
-        }
-        const newEntry = await response.json();
-        this.recentEntries.unshift(newEntry);
-        this.recentEntries = this.recentEntries.slice(0, 5); // Keep only the last 5 entries
-        this.showNotification('Vehicle entry registered successfully', 'success');
-        this.retakeImage(); // Reset the form after submission
-      } catch (error) {
-        console.error('Error submitting entry:', error);
-        this.showNotification('Failed to register vehicle entry', 'error');
-      }
-    },
-    async fetchRecentEntries() {
-      try {
-        const response = await fetch('/api/entries/recent');
-        if (!response.ok) {
-          throw new Error('Failed to fetch recent entries');
-        }
-        this.recentEntries = await response.json();
-      } catch (error) {
-        console.error('Error fetching recent entries:', error);
-      }
-    },
-    async fetchDashboardStats() {
-      try {
-        const response = await fetch('/api/stats');
-        if (!response.ok) {
-          throw new Error('Failed to fetch dashboard stats');
-        }
-        this.stats = await response.json();
-      } catch (error) {
-        console.error('Error fetching dashboard stats:', error);
-      }
-    },
-    formatTime(timestamp) {
-      const date = new Date(timestamp);
-      return date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    },
-    showNotification(message, type) {
-      this.notification.message = message;
-      this.notification.type = type;
-      this.notification.show = true;
-      setTimeout(() => {
-        this.notification.show = false;
-      }, 3000);
-    },
-    logout() {
-      // Handle logout logic here
-      this.showNotification('Logged out successfully', 'success');
-    }
+  } catch (err) {
+    console.error('Error accessing camera:', err)
+    showNotification('Camera access denied. Please check permissions.', 'error')
   }
 }
-</script>
-<style scoped>
-  /* Add any additional styles here */
-  .bg-gray-50 {
-    background-color: #f9fafb;
+
+const stopCamera = () => {
+  if (stream.value) {
+    stream.value.getTracks().forEach(track => track.stop())
   }
-  </style>
+}
+
+const captureImage = async () => {
+  const video = document.querySelector('video') as HTMLVideoElement
+  if (!video) return
+
+  const canvas = document.createElement('canvas')
+  canvas.width = video.videoWidth
+  canvas.height = video.videoHeight
+  const ctx = canvas.getContext('2d')
+  ctx?.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+  capturedImage.value = canvas.toDataURL('image/jpeg')
+  imageCaptured.value = true
+
+  await detectVehicleDetails()
+}
+
+// Detection (AI)
+// Function to detect vehicle details from an image
+const detectVehicleDetails = async (imageData = null) => {
+  try {
+    // Create the form data for the API request
+    const formData = new FormData();
+    
+    if (imageData) {
+      // If imageData is provided (from file upload), use it directly
+      formData.append('image', imageData);
+    } else if (capturedImage.value) {
+      // For camera capture, we need to convert the data URL to a blob
+      // Check if capturedImage is a string (data URL) or already a Blob
+      if (typeof capturedImage.value === 'string' && capturedImage.value.startsWith('data:')) {
+        // Convert data URL to Blob
+        const response = await fetch(capturedImage.value);
+        const blob = await response.blob();
+        formData.append('image', blob);
+      } else {
+        // It's already a Blob
+        formData.append('image', capturedImage.value);
+      }
+    } else {
+      showNotification('No image available to analyze.', 'error');
+      return;
+    }
+
+    // Notify that analysis is starting
+    showNotification('Analyzing vehicle image...', 'info');
+
+    // Call the API to analyze the image
+    const result = await analyzeCarImage(formData);
+
+    // Process the results
+    if (result && result.result) {
+      const vehicleDetails = parseVehicleDetails(result.result);
+      
+      // Update vehicle info with detected details
+      vehicleInfo.vehiclePlate = vehicleDetails.vehiclePlate || '';
+      vehicleInfo.vehicleType = vehicleDetails.vehicleType || '';
+      vehicleInfo.vehicleColor = vehicleDetails.vehicleColor || '';
+      vehicleInfo.autoDetected = true;
+
+      showNotification('Vehicle details detected successfully!', 'success');
+    } else {
+      showNotification('No vehicle information found.', 'error');
+    }
+  } catch (error) {
+    console.error('Error analyzing image:', error);
+    showNotification('Failed to analyze vehicle image.', 'error');
+  }
+};
+
+// Helper function to parse vehicle details from the result string
+const parseVehicleDetails = (resultString) => {
+  const details = {};
+  
+  // Split the result into lines and extract relevant information
+  const lines = resultString.split('\n');
+  
+  lines.forEach(line => {
+    const trimmedLine = line.trim();
+    
+    if (trimmedLine.startsWith('Car Model:')) {
+      details.vehicleType = trimmedLine.replace('Car Model:', '').trim();
+    } else if (trimmedLine.startsWith('License Plate:')) {
+      details.vehiclePlate = trimmedLine.replace('License Plate:', '').trim();
+    } else if (trimmedLine.startsWith('Car Color:')) {
+      details.vehicleColor = trimmedLine.replace('Car Color:', '').trim();
+    } 
+  });
+  
+  return details;
+};
+
+// Function to handle file upload
+const handleFileUpload = async (event) => {
+  const input = event.target;
+  
+  // Check if a file was selected
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    
+    // Check if the selected file is an image
+    if (!file.type.startsWith('image/')) {
+      showNotification('Please select an image file.', 'error');
+      return;
+    }
+    
+    // Display the selected image
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Set the image data and update UI state
+      capturedImage.value = e.target.result;
+      imageCaptured.value = true;
+      
+      // Process the uploaded image
+      detectVehicleDetails(file);
+    };
+    
+    // Read the file as a data URL to display it
+    reader.readAsDataURL(file);
+  }
+};
+
+// Submit
+const submitEntry = async () => {
+  if (!vehicleInfo.vehiclePlate) {
+    showNotification('License plate is required', 'error')
+    return
+  }
+
+  try {
+    const imageResponse = await fetch(capturedImage.value!)
+    const blob = await imageResponse.blob()
+    const sosUserId = getSosUserId()
+    console.log('sosUserId', sosUserId)
+    const arrivalData = {
+      vehiclePlate: vehicleInfo.vehiclePlate,
+      vehicleType: vehicleInfo.vehicleType,
+      vehicleColor: vehicleInfo.vehicleColor,
+      supplierName: vehicleInfo.supplierName,
+      companyName: vehicleInfo.companyName,
+      parkingSpace: vehicleInfo.parkingSpace.toString(),
+      sosUserId: sosUserId,
+      requestedTime: new Date().toISOString(),
+      autoDetected: vehicleInfo.autoDetected
+    }
+
+    const response = await createArrival(arrivalData)
+    console.log('response', response)
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error('Failed to submit entry')
+    }
+
+    const newEntry = response.data
+    recentEntries.value.unshift(newEntry)
+    recentEntries.value = recentEntries.value.slice(0, 5)
+
+    showNotification('Vehicle entry registered successfully', 'success')
+    retakeImage()
+  } catch (error) {
+    console.error('Error submitting entry:', error)
+    showNotification('Failed to register vehicle entry', 'error')
+  }
+}
+
+// Fetch Dashboard Data
+const fetchRecentEntries = async () => {
+  try {
+    const response = await fetch('/api/entries/recent')
+    if (!response.ok) throw new Error('Failed to fetch recent entries')
+    recentEntries.value = await response.json()
+  } catch (error) {
+    console.error('Error fetching recent entries:', error)
+  }
+}
+
+const fetchDashboardStats = async () => {
+  try {
+    const response = await fetch('/api/stats')
+    if (!response.ok) throw new Error('Failed to fetch dashboard stats')
+    Object.assign(stats, await response.json())
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error)
+  }
+}
+
+// Utils
+const formatTime = (timestamp: string) => {
+  const date = new Date(timestamp)
+  return date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+}
+
+const showNotification = (message: string, type: 'success' | 'error') => {
+  notification.message = message
+  notification.type = type
+  notification.show = true
+  setTimeout(() => {
+    notification.show = false
+  }, 3000)
+}
+
+const logout = () => {
+  showNotification('Logged out successfully', 'success')
+}
+
+// Lifecycle
+onMounted(() => {
+  initCamera()
+  fetchRecentEntries()
+  fetchDashboardStats()
+})
+
+onBeforeUnmount(() => {
+  stopCamera()
+})
+</script>

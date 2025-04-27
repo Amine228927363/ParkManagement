@@ -70,8 +70,8 @@
                 <span 
                   :class="[
                     'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                    user.status === 'active' ? 'bg-green-100 text-green-800' : 
-                    user.status === 'inactive' ? 'bg-red-100 text-red-800' : 
+                    user.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 
+                    user.status === 'INACTIVE' ? 'bg-red-100 text-red-800' : 
                     'bg-yellow-100 text-yellow-800'
                   ]"
                 >
