@@ -11,13 +11,13 @@
         <div class="px-4 py-2 text-xs font-semibold text-blue-300 uppercase tracking-wider">
           Main
         </div>
-        <router-link to="/sosView" class="flex items-center px-4 py-3 text-blue-100 bg-blue-900">
+        <router-link to="/sosView" class="flex items-center px-4 py-3 text-blue-100 ">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
           Dashboard
         </router-link>
-        <router-link to="/vehicleExit" class="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-700">
+        <router-link to="/vehicleExit" class="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-700 bg-blue-800">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
@@ -47,86 +47,14 @@
 
     <!-- Main Content -->
     <div class="flex-1 overflow-y-auto">
-      <header class="bg-white shadow">
-        <div class="px-4 py-4 sm:px-6 flex justify-between items-center">
-          <h1 class="text-xl font-semibold text-gray-900">SOS Vehicle Management</h1>
-          <div class="flex items-center space-x-4">
-            <span class="text-sm text-gray-600">{{ new Date().toLocaleDateString() }}</span>
-            <button class="p-1 rounded-full text-gray-500 hover:bg-gray-100 focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
-
+      
       <main class="p-6">
-        <!-- Dashboard Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-              <div class="bg-blue-500 rounded-full p-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </div>
-              <div class="ml-4">
-                <h2 class="text-sm font-medium text-gray-600">Today's Entries</h2>
-                <p class="text-2xl font-bold text-gray-900">{{ stats.todayEntries }}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-              <div class="bg-green-500 rounded-full p-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
-                </svg>
-              </div>
-              <div class="ml-4">
-                <h2 class="text-sm font-medium text-gray-600">Total Vehicles</h2>
-                <p class="text-2xl font-bold text-gray-900">{{ stats.totalVehicles }}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-              <div class="bg-purple-500 rounded-full p-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                </svg>
-              </div>
-              <div class="ml-4">
-                <h2 class="text-sm font-medium text-gray-600">Available Spaces</h2>
-                <p class="text-2xl font-bold text-gray-900">{{ availableSpaces.length}}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-              <div class="bg-red-500 rounded-full p-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div class="ml-4">
-                <h2 class="text-sm font-medium text-gray-600">Average Stay</h2>
-                <p class="text-2xl font-bold text-gray-900">{{ stats.averageStay }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <!-- Camera Section -->
           <div class="lg:col-span-2">
   <div class="bg-white rounded-lg shadow overflow-hidden">
     <div class="p-4 border-b border-gray-200">
-      <h2 class="text-lg font-medium text-gray-900">Vehicle Entry</h2>
+      <h2 class="text-lg font-medium text-gray-900">Vehicle Exit</h2>
       <p class="mt-1 text-sm text-gray-500">Take a photo or upload an image for automatic detail recognition</p>
     </div>
 
@@ -235,24 +163,6 @@
             <span v-if="vehicleInfo.autoDetected" class="text-xs text-green-600">Auto-detected</span>
           </div>
           <div>
-            <label for="notes" class="block text-sm font-medium text-gray-700">owner</label>
-            <input 
-              type="text" 
-              id="owner" 
-              v-model="vehicleInfo.supplierName"
-              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-          <div>
-            <label for="notes" class="block text-sm font-medium text-gray-700">Company</label>
-            <input 
-              type="text" 
-              id="company" 
-              v-model="vehicleInfo.companyName"
-              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-          <div>
             <label for="space" class="block text-sm font-medium text-gray-700">Assigned Space</label>
             <select 
               id="space" 
@@ -260,7 +170,7 @@
               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
               <option value="">Auto-assign</option>
-              <option v-for="space in availableSpaces" :key="space" :value="space.spaceNumber">Space {{ space.spaceNumber }}</option>
+              <option v-for="space in occupiedSpaces" :key="space" :value="space.spaceNumber">Space {{ space.spaceNumber }}</option>
             </select>
           </div>
         </div>
@@ -271,7 +181,7 @@
             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             :disabled="!imageCaptured"
           >
-            Register Entry
+            Exit
           </button>
         </div>
       </div>
@@ -346,7 +256,7 @@
 import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { analyzeCarImage } from '../../../services/geminiModel'
-import { createArrival,getAllArrivals } from '../../../services/arrival'
+import { deleteArrivalByVehiclePlate,getAllArrivals } from '../../../services/arrival'
 import { getAllSpaces, updateSpaceStatusByNumber } from '../../../services/parkingSpace'
 // Router
 const router = useRouter()
@@ -355,11 +265,10 @@ const currentUser = reactive({
   role: 'SOS_USER'
 })
 const parkingSpace = ref([]);
-const availableSpaces = ref([])
+const occupiedSpaces = ref([])
 const stream = ref<MediaStream | null>(null)
 const imageCaptured = ref(false)
 const capturedImage = ref<string | null>(null)
-
 const vehicleInfo = reactive({
   vehiclePlate: '',
   vehicleType: '',
@@ -376,18 +285,12 @@ const fetchparkingSpaces = async () => {
     const response = await getAllSpaces()
     parkingSpace.value = response.data
     console.log('Parking Spaces:', parkingSpace.value)  
-    availableSpaces.value = parkingSpace.value.filter(space => space.status === 'AVAILABLE')
-    console.log('Available Spaces:', availableSpaces.value)
+    occupiedSpaces.value = parkingSpace.value.filter(space => space.status === 'OCCUPIED')
+    console.log('Available Spaces:', occupiedSpaces.value)
   } catch (error) {
     console.error('Error fetching parking spaces:', error)
   }
 }
-const stats = reactive({
-  todayEntries: 42,
-  totalVehicles: 0,
-  availableSpaces: availableSpaces.value.length,
-  averageStay: '2.3h'
-})
 const notification = reactive({
   show: false,
   message: '',
@@ -574,8 +477,8 @@ const submitEntry = async () => {
       autoDetected: vehicleInfo.autoDetected
     }
 
-    const response = await createArrival(arrivalData)
-    await updateSpaceStatusByNumber(Number(vehicleInfo.parkingSpace), 'OCCUPIED')
+    const response = await deleteArrivalByVehiclePlate(arrivalData.vehiclePlate)
+    await updateSpaceStatusByNumber(Number(vehicleInfo.parkingSpace), 'AVAILABLE')
     console.log('response', response)
     if (response.status < 200 || response.status >= 300) {
       throw new Error('Failed to submit entry')

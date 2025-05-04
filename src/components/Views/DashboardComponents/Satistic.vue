@@ -40,34 +40,36 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import DashboardCard from './DashboardCard.vue'
+  import { getAllSpaces } from '../../../services/parkingSpace'
   
-  const parkingSpots = ref([
-    { id: 'A1', status: 'occupied' },
-    { id: 'A2', status: 'available' },
-    { id: 'A3', status: 'reserved' },
-    { id: 'A4', status: 'available' },
-    { id: 'B1', status: 'maintenance' },
-    { id: 'B2', status: 'occupied' },
-    { id: 'B3', status: 'available' },
-    { id: 'B4', status: 'occupied' },
-    { id: 'B5', status: 'occupied' },
-    { id: 'B6', status: 'occupied' },
-    { id: 'B7', status: 'occupied' },
-    { id: 'B8', status: 'occupied' },
-  ])
-  
+  // Fetch parking spots data
+  const parkingSpots = ref([])
+  const loading = ref(true)
+// Fetch data from the API
+const fetchParkingSpots = () => {
+  loading.value = true
+  getAllSpaces()
+    .then(response => {
+      parkingSpots.value = response.data
+      loading.value = false
+    })
+    .catch(error => {
+      console.error('Error fetching parking spots:', error)
+      loading.value = false
+    })}
+
   const currentDate = ref(
     new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date())
   )
   
   const statistics = computed(() => {
     const total = parkingSpots.value.length
-    const available = parkingSpots.value.filter(s => s.status === 'available').length
-    const occupied = parkingSpots.value.filter(s => s.status === 'occupied').length
-    const reserved = parkingSpots.value.filter(s => s.status === 'reserved').length
-    const maintenance = parkingSpots.value.filter(s => s.status === 'maintenance').length
+    const available = parkingSpots.value.filter(s => s.status === 'AVAILABLE').length
+    const occupied = parkingSpots.value.filter(s => s.status === 'OCCUPIED').length
+    const reserved = parkingSpots.value.filter(s => s.status === 'RESERVED').length
+    const maintenance = parkingSpots.value.filter(s => s.status === 'MAINTENANCE').length
     return { total, available, occupied, reserved, maintenance }
   })
   
@@ -80,6 +82,9 @@
     alert('Data refreshed!')
     currentDate.value = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date())
   }
+  onMounted(() => {
+    fetchParkingSpots()
+  })
   </script>
   
   <style scoped>

@@ -144,7 +144,9 @@ import {
   ChartBarSquareIcon,
   ClipboardDocumentListIcon,
   BellAlertIcon,
-  PowerIcon as LogoutIcon
+  TruckIcon,
+  PowerIcon as LogoutIcon,
+  UserGroupIcon
 } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
@@ -167,7 +169,8 @@ const mainMenuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: HomeIcon, path: '/dashboard' },
   { id: 'sosUsers', label: 'SOS Users', icon: UsersIcon, path: '/sos-users' },
   { id: 'Account Requests', label: 'Account Requests', icon:ClipboardDocumentListIcon , path: '/manageAccountRequests' },
-  { id: 'reports', label: 'Reports', icon: ChartBarSquareIcon, path: '/reports' },
+  { id: 'Arrivals', label: 'Arrivals', icon: TruckIcon, path: '/arrivals' },
+  { id: 'Suppliers', label: 'Suppliers', icon: UserGroupIcon, path: '/suppliers' },
 ]
 
 const configMenuItems = [

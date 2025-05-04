@@ -15,4 +15,15 @@ export const createArrival = async (arrivalData: {
   }) => {
     return axios.post(`${API_URL}/api/arrival/createArrival`, arrivalData);
   };
-  
+  //function to get all arrivals
+export const getAllArrivals = async () => {
+    const response= axios.get(`${API_URL}/api/arrival/getAllArrival`);
+    return (await response).data;
+  };
+  // delete arrival by id
+export const deleteArrivalById = async (id: number) => {
+    return axios.delete(`${API_URL}/api/arrival/deleteArrival/${id}`);
+  };
+  export const deleteArrivalByVehiclePlate = async (vehiclePlate: string) => {
+    return axios.delete(`${API_URL}/api/arrival/deleteArrivalByVehiclePlate/${vehiclePlate}`);
+  }

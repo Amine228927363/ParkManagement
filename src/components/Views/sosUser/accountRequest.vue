@@ -42,7 +42,7 @@
                     <input
                       type="text"
                       id="fullName"
-                      v-model="form.fullName"
+                      v-model="form.name"
                       required
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
                     />
@@ -133,7 +133,7 @@
                     </label>
                     <textarea
                       id="justification"
-                      v-model="form.justification"
+                      v-model="form.message"
                       rows="4"
                       required
                       placeholder="Please explain why you need access to the SOS system and how you will use it."
@@ -143,40 +143,7 @@
                 </div>
               </div>
               
-              <!-- Supervisor Information Section -->
-              <div class="bg-gray-50 p-4 rounded-md">
-                <h2 class="text-lg font-medium text-gray-800 mb-4">Supervisor Information</h2>
-                
-                <div class="space-y-4">
-                  <!-- Supervisor Name -->
-                  <div>
-                    <label for="supervisorName" class="block text-sm font-medium text-gray-700">
-                      Supervisor/Manager Name <span class="text-red-600">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="supervisorName"
-                      v-model="form.supervisorName"
-                      required
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
-                    />
-                  </div>
-                  
-                  <!-- Supervisor Email -->
-                  <div>
-                    <label for="supervisorEmail" class="block text-sm font-medium text-gray-700">
-                      Supervisor/Manager Email <span class="text-red-600">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="supervisorEmail"
-                      v-model="form.supervisorEmail"
-                      required
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
-                    />
-                  </div>
-                </div>
-              </div>
+            
               
               <!-- Submit Button -->
               <div>
@@ -257,19 +224,14 @@
   
   <script setup>
   import { ref, reactive } from 'vue';
-  
+import { createAccountRequest } from '../../../services/accountRequests';
+
   // Form data
   const form = reactive({
     name: '',
     email: '',
     phone: '',
-    organization: '',
-    role: '',
-    accountType: '',
-    otherType: '',
-    justification: '',
-    supervisorName: '',
-    supervisorEmail: ''
+    message: ''
   });
   
   // Form state
@@ -280,23 +242,13 @@
   // Submit form
   const submitForm = async () => {
     isSubmitting.value = true;
+    console.log('Submitting form:', form);
     
     try {
       // Simulate API call with delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // In a real application, you would send the data to your backend API
-      // const response = await fetch('/api/sos-account-requests', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(form)
-      // });
-      
-      // if (!response.ok) {
-      //   throw new Error('Failed to submit request');
-      // }
+      const response = await (createAccountRequest(form));
+  
       
       console.log('Form submitted:', form);
       submitted.value = true;

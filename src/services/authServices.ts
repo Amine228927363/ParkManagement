@@ -7,6 +7,7 @@ export interface LoginPayload {
   export interface LoginResponse {
     token: string;
     role: string;
+    id: number;
   }
   
   export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
@@ -17,9 +18,7 @@ export interface LoginPayload {
       },
       body: JSON.stringify(payload),
     });
-  
     const data = await response.json();
-  
     if (!response.ok) {
       throw new Error(data.message || 'Login failed');
     }

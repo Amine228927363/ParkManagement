@@ -46,6 +46,7 @@ const handleSubmit = async () => {
       // Save token and role
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.role);
+      localStorage.setItem('id', data.id);
       // Redirect based on role
       if (data.role === 'ADMIN') {
         window.location.href = '/dashboard';
@@ -189,7 +190,7 @@ const handleSubmit = async () => {
           <div class="text-center mt-8">
             <p class="text-sm text-gray-600">
               Don't have an account?
-              <a href="#" class="font-medium text-blue-600 hover:text-blue-500"> Sign up </a>
+              <router-link to="/register" class="font-medium text-blue-600 hover:text-blue-500"> Sign up </router-link>
             </p>
           </div>
         </div>

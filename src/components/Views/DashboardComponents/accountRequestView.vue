@@ -18,21 +18,21 @@
               
               <div class="flex items-center bg-yellow-50 px-4 py-2 rounded-lg">
                 <div class="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center mr-2">
-                  <span class="text-yellow-600 font-medium">{{ getCountByStatus('pending') }}</span>
+                  <span class="text-yellow-600 font-medium">{{ getCountByStatus('PENDING') }}</span>
                 </div>
                 <span class="text-gray-700">Pending</span>
               </div>
               
               <div class="flex items-center bg-green-50 px-4 py-2 rounded-lg">
                 <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center mr-2">
-                  <span class="text-green-600 font-medium">{{ getCountByStatus('approved') }}</span>
+                  <span class="text-green-600 font-medium">{{ getCountByStatus('APPROVED') }}</span>
                 </div>
                 <span class="text-gray-700">Approved</span>
               </div>
               
               <div class="flex items-center bg-red-50 px-4 py-2 rounded-lg">
                 <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center mr-2">
-                  <span class="text-red-600 font-medium">{{ getCountByStatus('rejected') }}</span>
+                  <span class="text-red-600 font-medium">{{ getCountByStatus('REJECTED') }}</span>
                 </div>
                 <span class="text-gray-700">Rejected</span>
               </div>
@@ -118,7 +118,7 @@
                   :key="request.id" 
                   class="border-t hover:bg-gray-50 transition-colors"
                 >
-                  <td class="py-3 px-4 font-medium">#{{ request.id }}</td>
+                  <td class="py-3 px-4 font-medium">{{ request.id }}</td>
                   <td class="py-3 px-4">{{ request.name }}</td>
                   <td class="py-3 px-4">
                     <a :href="`mailto:${request.email}`" class="text-blue-600 hover:underline">
@@ -233,7 +233,6 @@
   
   <script setup lang="ts">
   import { ref, onMounted, computed } from 'vue'
-  import axios from 'axios'
   import { getAllAccountRequests,updateAccountRequest } from '../../../services/accountRequests'
   import Sidebar from '../sidebar.vue'
   
@@ -243,14 +242,13 @@
   const statusFilter = ref('all')
   const showModal = ref(false)
   const selectedRequest = ref(null)
+  const adminId = ref(null) // Replace with actual admin ID from your authentication context or store
   const fetchRequests = async () => {
     loading.value = true
     try {
 
       const response = await getAllAccountRequests()
-      console.log('Response:', response)
       requests.value = response.data
-      console.log('Fetched account requests:', requests.value)
     } catch (error) {
       console.error('Error fetching account requests:', error)
       
@@ -262,8 +260,10 @@
   // Update request status
   const updateStatus = async (id: number, status: string) => {
     try {
+      const userId = localStorage.getItem('id')?.toString()
+      console.log('User ID:', userId)
       loading.value = true
-      await updateAccountRequest(id, { status })
+      await updateAccountRequest(id, { status,reviewedBy: userId })
       // Optimistic UI update
       const index = requests.value.findIndex(req => req.id === id)
       if (index !== -1) {
